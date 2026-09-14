@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel | MySchoolInfo</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="bg-slate-100 text-slate-800 min-h-screen">
+
+    <!-- 1. LOGIN MODAL / OYNASI -->
+    <div id="login-screen" class="fixed inset-0 bg-slate-900/80 backdrop-blur-md z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl p-8 max-w-md w-full shadow-2xl border border-slate-200">
+            <div class="text-center mb-6">
+                <div class="w-16 h-16 bg-blue-600 text-white rounded-2xl flex items-center justify-center text-2xl mx-auto mb-3 shadow-lg shadow-blue-500/30">
+                    <i class="fa-solid fa-user-shield"></i>
+                </div>
+                <h2 class="text-2xl font-extrabold text-slate-900">Admin Paneli</h2>
+                <p class="text-slate-500 text-sm mt-1">Tizimga kirish uchun login va parolni kiriting</p>
+            </div>
+
+            <form id="login-form" class="space-y-4">
+                <div id="login-error" class="hidden bg-red-50 text-red-600 p-3 rounded-xl text-xs font-semibold text-center border border-red-200">
+                    <i class="fa-solid fa-triangle-exclamation mr-1"></i> Login yoki parol xato!
+                </div>
+                <div>
+                    <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Login</label>
+                    <input type="text" id="username" placeholder="Login kiriting..." required class="w-full border rounded-xl p-3 text-sm focus:outline-blue-600 bg-slate-50">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Parol</label>
+                    <input type="password" id="password" placeholder="Parol kiriting..." required class="w-full border rounded-xl p-3 text-sm focus:outline-blue-600 bg-slate-50">
+                </div>
+                <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-xl transition shadow-lg shadow-blue-500/20">
+                    Tizimga kirish
+                </button>
+            </form>
+            <div class="mt-4 text-center">
+                <a href="index.html" class="text-slate-500 hover:text-slate-700 text-xs font-medium"><i class="fa-solid fa-arrow-left mr-1"></i> Bosh sahifaga qaytish</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- 2. MAIN ADMIN CONTENT (Avtorizatsiyadan so'ng ko'rinadi) -->
+    <div id="admin-content" class="hidden max-w-6xl mx-auto py-10 px-4">
+        <!-- Header bar -->
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8 bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+            <div>
+                <h1 class="text-2xl font-extrabold text-slate-900 flex items-center gap-2">
+                    <i class="fa-solid fa-sliders text-blue-600"></i> Boshqaruv Paneli
+                </h1>
+                <p class="text-xs text-slate-500 mt-1">Hush kelibsiz, Admin!</p>
+            </div>
+            <div class="flex items-center gap-3">
+                <a href="index.html" class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold px-4 py-2 rounded-xl text-sm transition">
+                    <i class="fa-solid fa-globe mr-1"></i> Saytni ko'rish
+                </a>
+                <button id="logout-btn" class="bg-red-50 hover:bg-red-100 text-red-600 font-semibold px-4 py-2 rounded-xl text-sm transition border border-red-200">
+                    <i class="fa-solid fa-right-from-bracket mr-1"></i> Chiqish
+                </button>
+            </div>
+        </div>
+
+        <!-- Forms & Management Grid -->
+        <div class="grid lg:grid-cols-2 gap-8">
+            
+            <!-- O'QITUVCHILAR BO'LIMI -->
+            <div class="space-y-6">
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                    <h2 class="text-lg font-bold mb-4 text-slate-900 flex items-center gap-2">
+                        <i class="fa-solid fa-user-plus text-blue-600"></i> Yangi O'qituvchi Qo'shish
+                    </h2>
+                    <form id="teacher-form" class="space-y-4">
+                        <div>
+                            <label class="block text-xs font-bold uppercase text-slate-500 mb-1">F.I.SH</label>
+                            <input type="text" id="t-name" placeholder="Masalan: Sardor Rahimov" required class="w-full border rounded-xl p-3 text-sm focus:outline-blue-600">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Fani / Mutaxassisligi</label>
+                            <input type="text" id="t-subject" placeholder="Masalan: Matematika" required class="w-full border rounded-xl p-3 text-sm focus:outline-blue-600">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Rasm URL Manzili</label>
+                            <input type="url" id="t-image" placeholder="https://..." required class="w-full border rounded-xl p-3 text-sm focus:outline-blue-600">
+                        </div>
+                        <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-xl transition">
+                            O'qituvchini Saqlash
+                        </button>
+                    </form>
+                </div>
+
+                <!-- O'qituvchilar Ro'yxati / O'chirish -->
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                    <h3 class="font-bold text-slate-900 mb-4">Mavjud O'qituvchilar Ro'yxati</h3>
+                    <div id="teachers-list" class="space-y-3 max-h-80 overflow-y-auto pr-2">
+                        <!-- JS orqali to'ldiriladi -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- YANGILIKLAR BO'LIMI -->
+            <div class="space-y-6">
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                    <h2 class="text-lg font-bold mb-4 text-slate-900 flex items-center gap-2">
+                        <i class="fa-solid fa-newspaper text-amber-500"></i> Yangilik Chop Etish
+                    </h2>
+                    <form id="news-form" class="space-y-4">
+                        <div>
+                            <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Sarlavha</label>
+                            <input type="text" id="n-title" placeholder="Yangilik sarlavhasi..." required class="w-full border rounded-xl p-3 text-sm focus:outline-amber-500">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Sana</label>
+                            <input type="text" id="n-date" placeholder="Masalan: 14 Sentyabr, 2026" required class="w-full border rounded-xl p-3 text-sm focus:outline-amber-500">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Rasm URL Manzili</label>
+                            <input type="url" id="n-image" placeholder="https://..." required class="w-full border rounded-xl p-3 text-sm focus:outline-amber-500">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Batafsil Tavsif</label>
+                            <textarea id="n-desc" rows="3" placeholder="Yangilik haqida batafsil..." required class="w-full border rounded-xl p-3 text-sm focus:outline-amber-500"></textarea>
+                        </div>
+                        <button type="submit" class="w-full bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold py-3 rounded-xl transition">
+                            Yangilikni Chop Etish
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Yangiliklar Ro'yxati / O'chirish -->
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                    <h3 class="font-bold text-slate-900 mb-4">Chop Etilgan Yangiliklar</h3>
+                    <div id="news-list" class="space-y-3 max-h-80 overflow-y-auto pr-2">
+                        <!-- JS orqali to'ldiriladi -->
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- SCRIPT / LOGIK BOSHGARUV -->
+    <script>
+        // ADMIN PAROL VA LOGIN SOZLAMASI
+        const ADMIN_LOGIN = "admin_ploi";
+        const ADMIN_PASS = "admin";
+
+        const loginScreen = document.getElementById('login-screen');
+        const adminContent = document.getElementById('admin-content');
+        const loginForm = document.getElementById('login-form');
+        const loginError = document.getElementById('login-error');
+        const logoutBtn = document.getElementById('logout-btn');
+
+        // Sessiya tekshiruvi (Ilgari kirgan bo'lsa darhol ochadi)
+        if (sessionStorage.getItem('isAdminLoggedIn') === 'true') {
+            showAdminPanel();
+        }
+
+        // Tizimga kirish
+        loginForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const u = document.getElementById('username').value.trim();
+            const p = document.getElementById('password').value.trim();
+
+            if (u === ADMIN_LOGIN && p === ADMIN_PASS) {
+                sessionStorage.setItem('isAdminLoggedIn', 'true');
+                loginError.classList.add('hidden');
+                showAdminPanel();
+            } else {
+                loginError.classList.remove('hidden');
+            }
+        });
+
+        // Tizimdan chiqish
+        logoutBtn.addEventListener('click', () => {
+            sessionStorage.removeItem('isAdminLoggedIn');
+            location.reload();
+        });
+
+        function showAdminPanel() {
+            loginScreen.classList.add('hidden');
+            adminContent.classList.remove('hidden');
+            loadAdminData();
+        }
+
+        // MA'LUMOTLARNI BOSHQARISH VA RENDER
+        function loadAdminData() {
+            renderTeachersList();
+            renderNewsList();
+        }
+
+        // O'qituvchilar ro'yxati va o'chirish
+        function renderTeachersList() {
+            const container = document.getElementById('teachers-list');
+            const teachers = JSON.parse(localStorage.getItem('teachers')) || [];
+
+            if(teachers.length === 0) {
+                container.innerHTML = `<p class="text-xs text-slate-400 italic">O'qituvchilar mavjud emas.</p>`;
+                return;
+            }
+
+            container.innerHTML = teachers.map((t, index) => `
+                <div class="flex items-center justify-between p-3 bg-slate-50 rounded-xl border border-slate-200">
+                    <div class="flex items-center gap-3">
+                        <img src="${t.image}" class="w-10 h-10 rounded-lg object-cover">
+                        <div>
+                            <p class="text-xs font-bold text-slate-800">${t.name}</p>
+                            <p class="text-[10px] text-slate-500">${t.subject}</p>
+                        </div>
+                    </div>
+                    <button onclick="deleteTeacher(${index})" class="text-red-500 hover:text-red-700 text-sm p-2">
+                        <i class="fa-solid fa-trash-can"></i>
+                    </button>
+                </div>
+            `).join('');
+        }
+
+        // Yangiliklar ro'yxati va o'chirish
+        function renderNewsList() {
+            const container = document.getElementById('news-list');
+            const news = JSON.parse(localStorage.getItem('news')) || [];
+
+            if(news.length === 0) {
+                container.innerHTML = `<p class="text-xs text-slate-400 italic">Yangiliklar mavjud emas.</p>`;
+                return;
+            }
+
+            container.innerHTML = news.map((n, index) => `
+                <div class="flex items-center justify-between p-3 bg-slate-50 rounded-xl border border-slate-200">
+                    <div class="flex items-center gap-3">
+                        <img src="${n.image}" class="w-10 h-10 rounded-lg object-cover">
+                        <div>
+                            <p class="text-xs font-bold text-slate-800">${n.title}</p>
+                            <p class="text-[10px] text-slate-500">${n.date}</p>
+                        </div>
+                    </div>
+                    <button onclick="deleteNews(${index})" class="text-red-500 hover:text-red-700 text-sm p-2">
+                        <i class="fa-solid fa-trash-can"></i>
+                    </button>
+                </div>
+            `).join('');
+        }
+
+        // Yangi O'qituvchi Qo'shish
+        document.getElementById('teacher-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const teachers = JSON.parse(localStorage.getItem('teachers')) || [];
+            teachers.unshift({
+                name: document.getElementById('t-name').value,
+                subject: document.getElementById('t-subject').value,
+                image: document.getElementById('t-image').value
+            });
+            localStorage.setItem('teachers', JSON.stringify(teachers));
+            e.target.reset();
+            renderTeachersList();
+            alert("O'qituvchi qo'shildi!");
+        });
+
+        // Yangi Yangilik Qo'shish
+        document.getElementById('news-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const news = JSON.parse(localStorage.getItem('news')) || [];
+            news.unshift({
+                title: document.getElementById('n-title').value,
+                date: document.getElementById('n-date').value,
+                image: document.getElementById('n-image').value,
+                desc: document.getElementById('n-desc').value
+            });
+            localStorage.setItem('news', JSON.stringify(news));
+            e.target.reset();
+            renderNewsList();
+            alert("Yangilik chop etildi!");
+        });
+
+        // O'chirish funksiyalari
+        window.deleteTeacher = function(index) {
+            if(confirm("Haqiqatan ham bu o'qituvchini o'chirmoqchimisiz?")) {
+                const teachers = JSON.parse(localStorage.getItem('teachers')) || [];
+                teachers.splice(index, 1);
+                localStorage.setItem('teachers', JSON.stringify(teachers));
+                renderTeachersList();
+            }
+        }
+
+        window.deleteNews = function(index) {
+            if(confirm("Haqiqatan ham bu yangilikni o'chirmoqchimisiz?")) {
+                const news = JSON.parse(localStorage.getItem('news')) || [];
+                news.splice(index, 1);
+                localStorage.setItem('news', JSON.stringify(news));
+                renderNewsList();
+            }
+        }
+    </script>
+</body>
+</html>
