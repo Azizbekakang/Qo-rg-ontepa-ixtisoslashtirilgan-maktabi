@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="uz" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Xonobod shahar Ixtisoslashtirilgan Maktabi | MySchoolInfo</title>
+    <meta name="description" content="Xonobod shahar Ixtisoslashtirilgan maktabining rasmiy veb-sayti.">
+    
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body class="bg-slate-50 text-slate-800 font-sans antialiased flex flex-col min-h-screen">
+
+    <!-- TOP BAR -->
+    <div class="bg-blue-900 text-slate-200 text-xs py-2 px-4 border-b border-blue-800">
+        <div class="max-w-7xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-2">
+            <div class="flex items-center gap-4">
+                <span><i class="fa-solid fa-location-dot text-amber-400 mr-1"></i> Andijon vil., Xonobod sh., Xontog‘ bekati</span>
+                <span class="hidden md:inline"><i class="fa-solid fa-calendar text-amber-400 mr-1"></i> Qabul: 5-11 sinf</span>
+            </div>
+            <div class="flex items-center gap-4">
+                <a href="https://t.me/my_school_info_bot" target="_blank" class="hover:text-amber-400 transition"><i class="fa-solid fa-robot mr-1"></i> Telegram Bot</a>
+                <a href="https://t.me/ima_xonobod" target="_blank" class="hover:text-amber-400 transition"><i class="fa-brands fa-telegram mr-1"></i> Telegram Channel</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- HEADER / NAVIGATION -->
+    <header class="sticky top-0 z-50 bg-white/90 backdrop-blur-md shadow-sm border-b border-slate-100">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-20">
+                <!-- Logo -->
+                <a href="#" class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center text-white font-bold text-xl shadow-md">
+                        <i class="fa-solid fa-graduation-cap"></i>
+                    </div>
+                    <div>
+                        <span class="text-lg font-extrabold tracking-tight text-blue-950 block leading-none">Xonobod IM</span>
+                        <span class="text-xs text-slate-500 tracking-wider uppercase font-semibold">Ixtisoslashtirilgan Maktab</span>
+                    </div>
+                </a>
+
+                <!-- Desktop Nav -->
+                <nav class="hidden md:flex items-center space-x-8 font-medium text-slate-700">
+                    <a href="#bosh-sahifa" class="text-blue-600 font-semibold border-b-2 border-blue-600 pb-1">Bosh sahifa</a>
+                    <a href="#about" class="hover:text-blue-600 transition">Biz haqimizda</a>
+                    <a href="#features" class="hover:text-blue-600 transition">Qulayliklar</a>
+                    <a href="#socials" class="hover:text-blue-600 transition">Ijtimoiy tarmoqlar</a>
+                    <a href="#contact" class="hover:text-blue-600 transition">Bog'lanish</a>
+                </nav>
+
+                <!-- CTA Button -->
+                <div class="hidden md:flex items-center">
+                    <a href="https://docs.google.com/forms/d/e/1FAIpQLSeSgK-TQdWPptKPbgt742wd46zcV-6r4PsRBVi_Z7JYXJ1GqQ/viewform" target="_blank" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-5 py-2.5 rounded-xl shadow-lg shadow-blue-500/20 transition-all hover:scale-[1.02]">
+                        Izoh qoldirish
+                    </a>
+                </div>
+
+                <!-- Mobile Menu Button -->
+                <button id="menu-btn" class="md:hidden text-slate-700 text-2xl focus:outline-none">
+                    <i class="fa-solid fa-bars"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Mobile Menu Drawer -->
+        <div id="mobile-menu" class="hidden md:hidden bg-white border-b border-slate-200 px-4 pt-2 pb-6 space-y-3">
+            <a href="#bosh-sahifa" class="block py-2 font-semibold text-blue-600">Bosh sahifa</a>
+            <a href="#about" class="block py-2 text-slate-700 font-medium">Biz haqimizda</a>
+            <a href="#features" class="block py-2 text-slate-700 font-medium">Qulayliklar</a>
+            <a href="#socials" class="block py-2 text-slate-700 font-medium">Ijtimoiy tarmoqlar</a>
+            <a href="#contact" class="block py-2 text-slate-700 font-medium">Bog'lanish</a>
+            <a href="https://docs.google.com/forms/d/e/1FAIpQLSeSgK-TQdWPptKPbgt742wd46zcV-6r4PsRBVi_Z7JYXJ1GqQ/viewform" target="_blank" class="block text-center bg-blue-600 text-white py-2.5 rounded-xl font-semibold mt-4">
+                Izoh qoldirish
+            </a>
+        </div>
+    </header>
+
+    <main class="flex-grow">
+        <!-- HERO SECTION -->
+        <section id="bosh-sahifa" class="relative bg-gradient-to-br from-blue-950 via-blue-900 to-indigo-950 text-white py-24 lg:py-32 overflow-hidden">
+            <div class="absolute inset-0 opacity-10 bg-[radial-gradient(#fff_1px,transparent_1px)] [background-size:16px_16px]"></div>
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+                <div class="grid lg:grid-cols-2 gap-12 items-center">
+                    <div>
+                        <span class="inline-flex items-center gap-2 bg-blue-500/20 text-blue-300 text-sm font-semibold px-4 py-1.5 rounded-full border border-blue-400/30 mb-6">
+                            <i class="fa-solid fa-award text-amber-400"></i> Zamonaviy va Sifatli Ta'lim
+                        </span>
+                        <h1 class="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight leading-tight mb-6">
+                            Xonobod shahar <span class="text-transparent bg-clip-text bg-gradient-to-r from-amber-300 to-amber-500">Ixtisoslashtirilgan Maktabi</span>
+                        </h1>
+                        <p class="text-blue-100/80 text-lg sm:text-xl mb-8 leading-relaxed font-light">
+                            Kelajak yetakchilarini tarbiyalaymiz. Yuqori saviyadagi o'qituvchilar va zamonaviy ta'lim imkoniyatlari bilan birga yuksalasiz.
+                        </p>
+                        <div class="flex flex-wrap gap-4">
+                            <a href="#about" class="bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold px-7 py-3.5 rounded-xl transition shadow-lg shadow-amber-500/20">
+                                Batafsil Ma'lumot
+                            </a>
+                            <a href="https://maps.app.goo.gl/hQwx4ZSwwsgLaC5a7" target="_blank" class="bg-white/10 hover:bg-white/20 text-white font-semibold px-7 py-3.5 rounded-xl border border-white/20 backdrop-blur-sm transition">
+                                <i class="fa-solid fa-map-location-dot mr-2"></i> Lokatsiya
+                            </a>
+                        </div>
+                    </div>
+                    <div class="relative">
+                        <div class="relative rounded-2xl overflow-hidden shadow-2xl border-4 border-white/10 group">
+                            <img src="https://images.unsplash.com/photo-1523050854058-8df90110c9f1?q=80&w=1200&auto=format&fit=crop" alt="School Building" class="w-full h-[400px] object-cover transition duration-500 group-hover:scale-105">
+                            <div class="absolute inset-0 bg-gradient-to-t from-blue-950/80 via-transparent to-transparent"></div>
+                            <div class="absolute bottom-6 left-6 right-6 text-white">
+                                <p class="text-xs uppercase tracking-wider text-amber-300 font-semibold">Maktab binosi</p>
+                                <h3 class="text-xl font-bold">Zamonaviy va Shinam Muhit</h3>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- QUICK STATS -->
+        <section class="py-12 bg-white border-b border-slate-100">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-8">
+                    <div class="text-center">
+                        <div class="text-3xl sm:text-4xl font-extrabold text-blue-900 mb-1">2023</div>
+                        <div class="text-sm font-medium text-slate-500">Tashkil topgan yili</div>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-3xl sm:text-4xl font-extrabold text-blue-900 mb-1">5-11</div>
+                        <div class="text-sm font-medium text-slate-500">Sinf o'quvchilari</div>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-3xl sm:text-4xl font-extrabold text-blue-900 mb-1">24</div>
+                        <div class="text-sm font-medium text-slate-500">Sinfdagi maksimal o'quvchi</div>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-3xl sm:text-4xl font-extrabold text-blue-900 mb-1">100%</div>
+                        <div class="text-sm font-medium text-slate-500">Saralangan o'qituvchilar</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ABOUT SECTION -->
+        <section id="about" class="py-20 bg-slate-50">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center max-w-3xl mx-auto mb-16">
+                    <h2 class="text-xs uppercase tracking-widest text-blue-600 font-extrabold mb-2">Maktab haqida</h2>
+                    <p class="text-3xl sm:text-4xl font-bold text-slate-900">Bizning Asosiy Tamoyillarimiz</p>
+                </div>
+
+                <div class="grid md:grid-cols-3 gap-8">
+                    <div class="bg-white p-8 rounded-2xl shadow-sm border border-slate-100 hover:shadow-md transition">
+                        <div class="w-14 h-14 bg-blue-100 text-blue-600 rounded-2xl flex items-center justify-center text-2xl mb-6">
+                            <i class="fa-solid fa-file-signature"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-slate-900 mb-3">Qabul Tartibi</h3>
+                        <p class="text-slate-600 leading-relaxed text-sm">
+                            Maktabga o‘quvchilar shaffof va adolatli imtihon asosida saralab olinadi. 5-sinfdan 11-sinfgacha bo‘lgan o‘quvchilar tahsil oladi. Har bir sinf 24 nafar o‘quvchidan iborat.
+                        </p>
+                    </div>
+
+                    <div class="bg-white p-8 rounded-2xl shadow-sm border border-slate-100 hover:shadow-md transition">
+                        <div class="w-14 h-14 bg-amber-100 text-amber-600 rounded-2xl flex items-center justify-center text-2xl mb-6">
+                            <i class="fa-solid fa-chalkboard-user"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-slate-900 mb-3">O‘qituvchilar Jamoasi</h3>
+                        <p class="text-slate-600 leading-relaxed text-sm">
+                            Ustozlarimiz ham maxsus tanlov va murakkab imtihon bosqichlaridan o'tgan. Ular o‘z sohasining tajribali va yuqori malakali mutaxassislaridir.
+                        </p>
+                    </div>
+
+                    <div class="bg-white p-8 rounded-2xl shadow-sm border border-slate-100 hover:shadow-md transition">
+                        <div class="w-14 h-14 bg-indigo-100 text-indigo-600 rounded-2xl flex items-center justify-center text-2xl mb-6">
+                            <i class="fa-solid fa-laptop-code"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-slate-900 mb-3">Qulayliklar</h3>
+                        <p class="text-slate-600 leading-relaxed text-sm">
+                            Maktabda zamonaviy sinfxonalar, AKT va kompyuter xonalari, keng va xavfsiz sport zallari hamda boy kitob fondiga ega kutubxona mavjud.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SOCIAL LINKS & COMMUNITY -->
+        <section id="socials" class="py-20 bg-white">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center max-w-3xl mx-auto mb-16">
+                    <h2 class="text-xs uppercase tracking-widest text-blue-600 font-extrabold mb-2">Ijtimoiy Tarmoqlar</h2>
+                    <p class="text-3xl sm:text-4xl font-bold text-slate-900">Bizni Kuzatib Boring</p>
+                </div>
+
+                <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <a href="https://t.me/my_school_info_bot" target="_blank" class="p-6 bg-slate-50 hover:bg-sky-50 rounded-2xl border border-slate-100 transition group flex flex-col items-center text-center">
+                        <div class="w-16 h-16 bg-sky-500 text-white rounded-2xl flex items-center justify-center text-3xl mb-4 shadow-lg shadow-sky-500/20 group-hover:scale-110 transition">
+                            <i class="fa-solid fa-robot"></i>
+                        </div>
+                        <h4 class="font-bold text-slate-900 mb-1">Telegram Bot</h4>
+                        <p class="text-xs text-slate-500">@my_school_info_bot</p>
+                    </a>
+
+                    <a href="https://t.me/ima_xonobod" target="_blank" class="p-6 bg-slate-50 hover:bg-sky-50 rounded-2xl border border-slate-100 transition group flex flex-col items-center text-center">
+                        <div class="w-16 h-16 bg-sky-600 text-white rounded-2xl flex items-center justify-center text-3xl mb-4 shadow-lg shadow-sky-600/20 group-hover:scale-110 transition">
+                            <i class="fa-brands fa-telegram"></i>
+                        </div>
+                        <h4 class="font-bold text-slate-900 mb-1">Telegram Sahifamiz</h4>
+                        <p class="text-xs text-slate-500">@ima_xonobod</p>
+                    </a>
+
+                    <a href="https://www.instagram.com/xonobod_im" target="_blank" class="p-6 bg-slate-50 hover:bg-pink-50 rounded-2xl border border-slate-100 transition group flex flex-col items-center text-center">
+                        <div class="w-16 h-16 bg-gradient-to-tr from-amber-500 via-rose-500 to-purple-600 text-white rounded-2xl flex items-center justify-center text-3xl mb-4 shadow-lg shadow-pink-500/20 group-hover:scale-110 transition">
+                            <i class="fa-brands fa-instagram"></i>
+                        </div>
+                        <h4 class="font-bold text-slate-900 mb-1">Instagram</h4>
+                        <p class="text-xs text-slate-500">@xonobod_im</p>
+                    </a>
+
+                    <a href="https://www.youtube.com/@xonobod_im" target="_blank" class="p-6 bg-slate-50 hover:bg-red-50 rounded-2xl border border-slate-100 transition group flex flex-col items-center text-center">
+                        <div class="w-16 h-16 bg-red-600 text-white rounded-2xl flex items-center justify-center text-3xl mb-4 shadow-lg shadow-red-600/20 group-hover:scale-110 transition">
+                            <i class="fa-brands fa-youtube"></i>
+                        </div>
+                        <h4 class="font-bold text-slate-900 mb-1">YouTube Kanal</h4>
+                        <p class="text-xs text-slate-500">@xonobod_im</p>
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- FEEDBACK / FORMS SECTION -->
+        <section id="contact" class="py-20 bg-slate-900 text-white">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="bg-gradient-to-r from-blue-900 to-indigo-900 rounded-3xl p-8 sm:p-12 border border-white/10 shadow-2xl flex flex-col md:flex-row items-center justify-between gap-8">
+                    <div>
+                        <h3 class="text-2xl sm:text-3xl font-extrabold mb-3">Fikr-mulohazalaringiz biz uchun muhim!</h3>
+                        <p class="text-blue-200 text-sm sm:text-base max-w-xl">
+                            Maktabimiz faoliyati yoki sayt haqida izohingiz bormi? Taklif va fikrlaringizni shakl orqali yuboring.
+                        </p>
+                    </div>
+                    <div class="flex flex-wrap gap-4 shrink-0">
+                        <a href="https://docs.google.com/forms/d/e/1FAIpQLSeSgK-TQdWPptKPbgt742wd46zcV-6r4PsRBVi_Z7JYXJ1GqQ/viewform" target="_blank" class="bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold px-6 py-3 rounded-xl transition shadow-lg">
+                            <i class="fa-solid fa-pen-to-square mr-2"></i> Izoh Qoldirish
+                        </a>
+                        <a href="https://docs.google.com/spreadsheets/d/1_6aLwLWYbIvvfSvkau3qxSktt9s1iFFOR8wJsNUTekk/edit?usp=sharing" target="_blank" class="bg-white/10 hover:bg-white/20 text-white font-semibold px-6 py-3 rounded-xl border border-white/20 transition">
+                            <i class="fa-solid fa-table mr-2"></i> Javoblarni Ko'rish
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="bg-slate-950 text-slate-400 py-12 border-t border-slate-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex flex-col md:flex-row justify-between items-center gap-6">
+                <div class="flex items-center gap-3">
+                    <div class="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center text-white font-bold text-sm">
+                        <i class="fa-solid fa-graduation-cap"></i>
+                    </div>
+                    <span class="text-slate-200 font-bold">Xonobod shahar Ixtisoslashtirilgan Maktabi</span>
+                </div>
+                <div class="text-xs text-slate-500 text-center md:text-right">
+                    <p>&copy; 2026 MySchoolInfo. Barcha huquqlar himoyalangan.</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
