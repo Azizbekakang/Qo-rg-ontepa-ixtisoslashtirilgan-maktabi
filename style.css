@@ -18,3 +18,31 @@ body {
 ::-webkit-scrollbar-thumb:hover {
     background: #475569;
 }
+
+/* Face Recognition Section */
+#face-recognition {
+    min-height: 100vh;
+}
+
+#reference-preview, #video, #canvas {
+    transition: all 0.3s ease;
+}
+
+#verification-result {
+    transition: all 0.3s ease;
+    border: 2px solid transparent;
+}
+
+/* Loading animation for models */
+@keyframes pulse {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.5;
+    }
+}
+
+.loading {
+    animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}

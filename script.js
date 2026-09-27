@@ -1,3 +1,199 @@
+// ===== FACE RECOGNITION VARIABLES =====
+let video = null;
+let canvas = null;
+let referenceImage = null;
+let referenceDescriptors = null;
+let stream = null;
+let modelsLoaded = false;
+
+// ===== FACE API MODELS =====
+async function loadModels() {
+    try {
+        // Load models from CDN
+        await faceapi.nets.tinyFaceDetector.loadFromUri('https://justadudewhohacks.github.io/face_api.js/models');
+        await faceapi.nets.faceLandmark68Net.loadFromUri('https://justadudewhohacks.github.io/face_api.js/models');
+        await faceapi.nets.faceRecognitionNet.loadFromUri('https://justadudewhohacks.github.io/face_api.js/models');
+        modelsLoaded = true;
+        console.log('Face API models loaded successfully');
+    } catch (error) {
+        console.error('Error loading Face API models:', error);
+        showResult('Xatolik yuz berdi!', 'Models yuklanmadi. Internet alomasligini tekshiring.', 'error');
+    }
+}
+
+// ===== CAMERA FUNCTIONS =====
+async function startCamera() {
+    if (!modelsLoaded) {
+        alert('Iltimos, models yuklanishini kutib turing...');
+        return;
+    }
+    
+    try {
+        stream = await navigator.mediaDevices.getUserMedia({ 
+            video: { facingMode: 'user' }, 
+            audio: false 
+        });
+        video.srcObject = stream;
+        document.getElementById('start-camera').classList.add('hidden');
+        document.getElementById('stop-camera').classList.remove('hidden');
+        document.getElementById('capture-face').classList.remove('hidden');
+    } catch (error) {
+        console.error('Camera error:', error);
+        alert('Kamera ishga tushirilmadi. Ruxsat berilganligini tekshiring.');
+    }
+}
+
+function stopCamera() {
+    if (stream) {
+        stream.getTracks().forEach(track => track.stop());
+        video.srcObject = null;
+        stream = null;
+    }
+    document.getElementById('start-camera').classList.remove('hidden');
+    document.getElementById('stop-camera').classList.add('hidden');
+    document.getElementById('capture-face').classList.add('hidden');
+}
+
+// ===== IMAGE UPLOAD & PREVIEW =====
+document.addEventListener('DOMContentLoaded', () => {
+    video = document.getElementById('video');
+    canvas = document.getElementById('canvas');
+    
+    // Initialize existing functionality
+    initData();
+    renderTeachers();
+    renderNews();
+
+    const menuBtn = document.getElementById('menu-btn');
+    const mobileMenu = document.getElementById('mobile-menu');
+    if (menuBtn && mobileMenu) {
+        menuBtn.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+        });
+    }
+    
+    // Load Face API models
+    loadModels();
+    
+    // Reference image upload
+    const referenceUpload = document.getElementById('reference-upload');
+    const referencePreview = document.getElementById('reference-preview');
+    const startVerificationBtn = document.getElementById('start-verification');
+    
+    referenceUpload.addEventListener('change', async (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        
+        referenceImage = await faceapi.bufferToImage(file);
+        referencePreview.src = URL.createObjectURL(file);
+        referencePreview.classList.remove('hidden');
+        
+        // Enable verification button
+        startVerificationBtn.disabled = false;
+        startVerificationBtn.classList.remove('disabled:opacity-50', 'disabled:cursor-not-allowed');
+        
+        // Extract face descriptors from reference image
+        const detections = await faceapi.detectAllFaces(referenceImage, new faceapi.TinyFaceDetectorOptions())
+            .withFaceLandmarks()
+            .withFaceDescriptors();
+        
+        if (detections.length > 0) {
+            referenceDescriptors = detections.map(d => d.descriptor);
+            showResult('Tayyor!', 'Reference yuz topildi.', 'success');
+        } else {
+            referenceDescriptors = null;
+            showResult('Xatolik!', 'Yuz topilmadi. Boshqa rasm tanlang.', 'error');
+        }
+    });
+    
+    // Start verification button
+    startVerificationBtn.addEventListener('click', async () => {
+        if (!referenceDescriptors) {
+            alert('Avval reference rasm yuklang!');
+            return;
+        }
+        
+        // Start camera automatically
+        await startCamera();
+        showResult('Kamera yoqildi', 'Yuzingizni kameraga qarating.', 'info');
+    });
+    
+    // Camera buttons
+    document.getElementById('start-camera').addEventListener('click', startCamera);
+    document.getElementById('stop-camera').addEventListener('click', stopCamera);
+    document.getElementById('capture-face').addEventListener('click', captureAndCompare);
+});
+
+// ===== CAPTURE AND COMPARE =====
+async function captureAndCompare() {
+    if (!video || !canvas || !referenceDescriptors) {
+        alert('Kamera yoqilmagan yoki reference rasm yoq!');
+        return;
+    }
+    
+    // Capture frame from video
+    const context = canvas.getContext('2d');
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+    context.drawImage(video, 0, 0, canvas.width, canvas.height);
+    
+    // Detect faces in captured image
+    const detections = await faceapi.detectAllFaces(canvas, new faceapi.TinyFaceDetectorOptions())
+        .withFaceLandmarks()
+        .withFaceDescriptors();
+    
+    if (detections.length === 0) {
+        showResult('Yuz topilmadi!', 'Kamerada yuz yoq. Iltimos, yuzingizni kameraga qarating.', 'error');
+        return;
+    }
+    
+    // Compare with reference
+    const faceMatcher = new faceapi.FaceMatcher(referenceDescriptors, 0.6);
+    const results = detections.map(d => faceMatcher.findBestMatch(d.descriptor));
+    
+    // Display results
+    const bestMatch = results[0];
+    const confidence = bestMatch.distance;
+    const isMatch = confidence <= 0.6; // Threshold: lower is better
+    
+    let resultText, resultDesc, resultType;
+    if (isMatch) {
+        resultText = 'Muvvaffaqiyatli!';
+        resultDesc = `Yuz mos keladi! Aniqlik: ${Math.round((1 - confidence) * 100)}%`;
+        resultType = 'success';
+    } else {
+        resultText = 'Mos kelmadi!';
+        resultDesc = `Yuz mos kelmadi. Aniqlik: ${Math.round((1 - confidence) * 100)}%`;
+        resultType = 'error';
+    }
+    
+    showResult(resultText, resultDesc, resultType);
+}
+
+// ===== SHOW RESULT =====
+function showResult(text, desc, type) {
+    const resultDiv = document.getElementById('verification-result');
+    const resultText = document.getElementById('result-text');
+    const resultConfidence = document.getElementById('result-confidence');
+    
+    resultText.textContent = text;
+    resultConfidence.textContent = desc;
+    resultDiv.classList.remove('hidden');
+    
+    // Set color based on type
+    resultDiv.classList.remove('bg-green-50', 'bg-red-50', 'bg-blue-50', 'text-green-700', 'text-red-700', 'text-blue-700', 'border-green-200', 'border-red-200', 'border-blue-200');
+    
+    if (type === 'success') {
+        resultDiv.classList.add('bg-green-50', 'text-green-700', 'border-green-200');
+    } else if (type === 'error') {
+        resultDiv.classList.add('bg-red-50', 'text-red-700', 'border-red-200');
+    } else {
+        resultDiv.classList.add('bg-blue-50', 'text-blue-700', 'border-blue-200');
+    }
+}
+
+// ===== EXISTING FUNCTIONS (Keep for compatibility) =====
+
 // Boshlang'ich Test Ma'lumotlari
 const defaultTeachers = [
     {
@@ -76,18 +272,3 @@ function renderNews() {
         </div>
     `).join('');
 }
-
-// Mobil Menyuni Boshqarish
-document.addEventListener('DOMContentLoaded', () => {
-    initData();
-    renderTeachers();
-    renderNews();
-
-    const menuBtn = document.getElementById('menu-btn');
-    const mobileMenu = document.getElementById('mobile-menu');
-    if (menuBtn && mobileMenu) {
-        menuBtn.addEventListener('click', () => {
-            mobileMenu.classList.toggle('hidden');
-        });
-    }
-});
