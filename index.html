@@ -193,8 +193,13 @@
             </div>
             
             <!-- Models loading status -->
-            <div id="models-status" class="hidden mb-6 p-4 bg-blue-50 text-blue-700 rounded-xl border border-blue-200 text-center font-medium">
-                Models yuklanmoqda...
+            <div class="mb-6">
+                <div id="models-status" class="hidden p-3 bg-blue-50 text-blue-700 rounded-xl border border-blue-200 text-center font-medium">
+                    Models yuklanmoqda...
+                </div>
+                <div class="w-full bg-slate-200 rounded-full h-2 mt-2">
+                    <div id="models-progress" class="hidden bg-blue-500 h-2 rounded-full transition-all duration-300"></div>
+                </div>
             </div>
             
             <div class="grid lg:grid-cols-2 gap-12 items-center">

@@ -15,32 +15,47 @@ async function loadModels() {
     try {
         // Show loading state
         const statusElement = document.getElementById('models-status');
+        const progressElement = document.getElementById('models-progress');
+        
         if (statusElement) {
-            statusElement.textContent = 'Models yuklanmoqda...';
             statusElement.classList.remove('hidden');
         }
+        if (progressElement) {
+            progressElement.classList.remove('hidden');
+            progressElement.style.width = '0%';
+        }
         
-        // Load models from jsdelivr CDN (more reliable)
+        // Load tiny models (faster loading) from jsdelivr CDN
         const modelsPath = 'https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/weights';
         
+        // Load models sequentially with progress
+        if (progressElement) progressElement.style.width = '33%';
         await faceapi.nets.tinyFaceDetector.loadFromUri(modelsPath);
-        await faceapi.nets.faceLandmark68Net.loadFromUri(modelsPath);
+        
+        if (progressElement) progressElement.style.width = '66%';
+        await faceapi.nets.faceLandmark68TinyNet.loadFromUri(modelsPath);
+        
+        if (progressElement) progressElement.style.width = '100%';
         await faceapi.nets.faceRecognitionNet.loadFromUri(modelsPath);
+        
+        // Also load faceLandmark68Net for better accuracy
+        await faceapi.nets.faceLandmark68Net.loadFromUri(modelsPath);
         
         modelsLoaded = true;
         console.log('Face API models loaded successfully');
         
         if (statusElement) {
-            statusElement.textContent = 'Models yuklandi ✓';
+            statusElement.textContent = '✓ Models yuklandi!';
             setTimeout(() => {
                 statusElement.classList.add('hidden');
-            }, 2000);
+                if (progressElement) progressElement.classList.add('hidden');
+            }, 1000);
         }
     } catch (error) {
         console.error('Error loading Face API models:', error);
         const statusElement = document.getElementById('models-status');
         if (statusElement) {
-            statusElement.textContent = 'Models yuklanmadi! Internetni tekshiring.';
+            statusElement.textContent = '✗ Models yuklanmadi! Internetni tekshiring.';
         }
     } finally {
         modelsLoading = false;
