@@ -85,6 +85,10 @@ async function loadModels() {
     }
 }
 
+// ===== LOAD MODELS IMMEDIATELY =====
+// Start loading models right away
+loadModels();
+
 // ===== CAMERA FUNCTIONS =====
 async function startCamera() {
     if (!modelsLoaded) {
@@ -135,9 +139,6 @@ document.addEventListener('DOMContentLoaded', () => {
             mobileMenu.classList.toggle('hidden');
         });
     }
-    
-    // Load Face API models
-    loadModels();
     
     // Reference image upload
     const referenceUpload = document.getElementById('reference-upload');
