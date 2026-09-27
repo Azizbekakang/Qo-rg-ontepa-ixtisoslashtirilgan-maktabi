@@ -260,10 +260,11 @@
 
     <!-- Face API JS -->
     <script src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>
-    <!-- Load models from jsdelivr -->
+    <!-- TensorFlow.js for face-api -->
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@3.11.0/dist/tf.min.js"></script>
     <script>
-        // Preload models path
-        faceapi.TFJS.setBackend('webgl');
+        // Set TensorFlow.js backend to CPU (more compatible)
+        tf.setBackend('cpu');
     </script>
     <script src="script.js"></script>
 </body>

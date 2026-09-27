@@ -23,32 +23,37 @@ async function loadModels() {
         
         if (statusElement) {
             statusElement.classList.remove('hidden');
-            statusElement.textContent = 'face-api.js models yuklanmoqda...';
+            statusElement.textContent = 'face-api.js models va TensorFlow.js yuklanmoqda...';
         }
         if (progressElement) {
             progressElement.classList.remove('hidden');
             progressElement.style.width = '0%';
         }
         
+        // Wait for TensorFlow.js to be ready
+        await tf.ready();
+        console.log('TensorFlow.js ready');
+        
         // Load models from jsdelivr CDN (most reliable for face-api.js)
         const modelsPath = 'https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/weights';
         
         // Load face detection model
-        if (progressElement) progressElement.style.width = '25%';
+        if (progressElement) progressElement.style.width = '33%';
         await faceapi.nets.tinyFaceDetector.loadFromUri(modelsPath);
+        console.log('tinyFaceDetector loaded');
         
         // Load face landmark model (for face alignment)
-        if (progressElement) progressElement.style.width = '50%';
+        if (progressElement) progressElement.style.width = '66%';
         await faceapi.nets.faceLandmark68Net.loadFromUri(modelsPath);
+        console.log('faceLandmark68Net loaded');
         
         // Load face recognition model (the main one for face matching)
-        if (progressElement) progressElement.style.width = '75%';
-        await faceapi.nets.faceRecognitionNet.loadFromUri(modelsPath);
-        
         if (progressElement) progressElement.style.width = '100%';
+        await faceapi.nets.faceRecognitionNet.loadFromUri(modelsPath);
+        console.log('faceRecognitionNet loaded');
         
         modelsLoaded = true;
-        console.log('✓ face-api.js models loaded successfully');
+        console.log('✓ All face-api.js models loaded successfully');
         
         if (statusElement) {
             statusElement.textContent = '✓ Models yuklandi! Endi yuz solishtirish mumkin.';
@@ -61,7 +66,7 @@ async function loadModels() {
         console.error('Error loading face-api.js models:', error);
         const statusElement = document.getElementById('models-status');
         if (statusElement) {
-            statusElement.textContent = '✗ Models yuklanmadi! Internetni tekshiring.';
+            statusElement.textContent = '✗ Models yuklanmadi! Internetni tekshiring. ' + error.message;
         }
     } finally {
         modelsLoading = false;
