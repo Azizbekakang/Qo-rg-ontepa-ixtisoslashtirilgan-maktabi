@@ -7,16 +7,11 @@ let stream = null;
 let modelsLoaded = false;
 let modelsLoading = false;
 
-// ===== FACE API MODELS =====
-// Try multiple CDN sources for models
-const MODEL_SOURCES = [
-    'https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/weights',
-    'https://unpkg.com/face-api.js@0.22.2/weights',
-    'https://justadudewhohacks.github.io/face_api.js/models'
-];
+// ===== FACE RECOGNITION WITH face-api.js =====
+// face-api.js uses TensorFlow.js for face detection and recognition
+// We'll use the built-in models from face-api.js which are optimized
 
-let currentModelSource = 0;
-
+// ===== LOAD MODELS =====
 async function loadModels() {
     if (modelsLoading) return;
     modelsLoading = true;
@@ -28,54 +23,42 @@ async function loadModels() {
         
         if (statusElement) {
             statusElement.classList.remove('hidden');
-            statusElement.textContent = 'Models yuklanmoqda...';
+            statusElement.textContent = 'face-api.js models yuklanmoqda...';
         }
         if (progressElement) {
             progressElement.classList.remove('hidden');
             progressElement.style.width = '0%';
         }
         
-        // Try each CDN source until models load successfully
-        for (let i = 0; i < MODEL_SOURCES.length; i++) {
-            currentModelSource = i;
-            const modelsPath = MODEL_SOURCES[i];
-            
-            try {
-                if (progressElement) progressElement.style.width = '25%';
-                await faceapi.nets.tinyFaceDetector.loadFromUri(modelsPath);
-                
-                if (progressElement) progressElement.style.width = '50%';
-                await faceapi.nets.faceLandmark68TinyNet.loadFromUri(modelsPath);
-                
-                if (progressElement) progressElement.style.width = '75%';
-                await faceapi.nets.faceRecognitionNet.loadFromUri(modelsPath);
-                
-                if (progressElement) progressElement.style.width = '100%';
-                
-                modelsLoaded = true;
-                console.log('Face API models loaded successfully from:', modelsPath);
-                
-                if (statusElement) {
-                    statusElement.textContent = '✓ Models yuklandi!';
-                    setTimeout(() => {
-                        statusElement.classList.add('hidden');
-                        if (progressElement) progressElement.classList.add('hidden');
-                    }, 1000);
-                }
-                return; // Success - exit the function
-            } catch (error) {
-                console.warn(`Failed to load models from ${modelsPath}:`, error);
-                if (statusElement) {
-                    statusElement.textContent = `CDN ${i + 1}/${MODEL_SOURCES.length} sinab ko'rilmoqda...`;
-                }
-                continue; // Try next CDN
-            }
-        }
+        // Load models from jsdelivr CDN (most reliable for face-api.js)
+        const modelsPath = 'https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/weights';
         
-        // If all CDNs failed
-        throw new Error('All CDN sources failed to load models');
+        // Load face detection model
+        if (progressElement) progressElement.style.width = '25%';
+        await faceapi.nets.tinyFaceDetector.loadFromUri(modelsPath);
+        
+        // Load face landmark model (for face alignment)
+        if (progressElement) progressElement.style.width = '50%';
+        await faceapi.nets.faceLandmark68Net.loadFromUri(modelsPath);
+        
+        // Load face recognition model (the main one for face matching)
+        if (progressElement) progressElement.style.width = '75%';
+        await faceapi.nets.faceRecognitionNet.loadFromUri(modelsPath);
+        
+        if (progressElement) progressElement.style.width = '100%';
+        
+        modelsLoaded = true;
+        console.log('✓ face-api.js models loaded successfully');
+        
+        if (statusElement) {
+            statusElement.textContent = '✓ Models yuklandi! Endi yuz solishtirish mumkin.';
+            setTimeout(() => {
+                statusElement.classList.add('hidden');
+                if (progressElement) progressElement.classList.add('hidden');
+            }, 1500);
+        }
     } catch (error) {
-        console.error('Error loading Face API models:', error);
+        console.error('Error loading face-api.js models:', error);
         const statusElement = document.getElementById('models-status');
         if (statusElement) {
             statusElement.textContent = '✗ Models yuklanmadi! Internetni tekshiring.';
@@ -86,7 +69,7 @@ async function loadModels() {
 }
 
 // ===== LOAD MODELS IMMEDIATELY =====
-// Start loading models right away
+// Start loading models right away when script loads
 loadModels();
 
 // ===== CAMERA FUNCTIONS =====
