@@ -5,26 +5,52 @@ let referenceImage = null;
 let referenceDescriptors = null;
 let stream = null;
 let modelsLoaded = false;
+let modelsLoading = false;
 
 // ===== FACE API MODELS =====
 async function loadModels() {
+    if (modelsLoading) return;
+    modelsLoading = true;
+    
     try {
-        // Load models from CDN
-        await faceapi.nets.tinyFaceDetector.loadFromUri('https://justadudewhohacks.github.io/face_api.js/models');
-        await faceapi.nets.faceLandmark68Net.loadFromUri('https://justadudewhohacks.github.io/face_api.js/models');
-        await faceapi.nets.faceRecognitionNet.loadFromUri('https://justadudewhohacks.github.io/face_api.js/models');
+        // Show loading state
+        const statusElement = document.getElementById('models-status');
+        if (statusElement) {
+            statusElement.textContent = 'Models yuklanmoqda...';
+            statusElement.classList.remove('hidden');
+        }
+        
+        // Load models from jsdelivr CDN (more reliable)
+        const modelsPath = 'https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/weights';
+        
+        await faceapi.nets.tinyFaceDetector.loadFromUri(modelsPath);
+        await faceapi.nets.faceLandmark68Net.loadFromUri(modelsPath);
+        await faceapi.nets.faceRecognitionNet.loadFromUri(modelsPath);
+        
         modelsLoaded = true;
         console.log('Face API models loaded successfully');
+        
+        if (statusElement) {
+            statusElement.textContent = 'Models yuklandi ✓';
+            setTimeout(() => {
+                statusElement.classList.add('hidden');
+            }, 2000);
+        }
     } catch (error) {
         console.error('Error loading Face API models:', error);
-        showResult('Xatolik yuz berdi!', 'Models yuklanmadi. Internet alomasligini tekshiring.', 'error');
+        const statusElement = document.getElementById('models-status');
+        if (statusElement) {
+            statusElement.textContent = 'Models yuklanmadi! Internetni tekshiring.';
+        }
+    } finally {
+        modelsLoading = false;
     }
 }
 
 // ===== CAMERA FUNCTIONS =====
 async function startCamera() {
     if (!modelsLoaded) {
-        alert('Iltimos, models yuklanishini kutib turing...');
+        showResult('Kuting!', 'Models hali yuklanmagan. Iltimos, 2-3 soniya kutib turing...', 'info');
         return;
     }
     
@@ -39,7 +65,7 @@ async function startCamera() {
         document.getElementById('capture-face').classList.remove('hidden');
     } catch (error) {
         console.error('Camera error:', error);
-        alert('Kamera ishga tushirilmadi. Ruxsat berilganligini tekshiring.');
+        showResult('Xatolik!', 'Kamera ishga tushirilmadi. Ruxsat berilganligini tekshiring.', 'error');
     }
 }
 
@@ -84,90 +110,134 @@ document.addEventListener('DOMContentLoaded', () => {
         const file = e.target.files[0];
         if (!file) return;
         
-        referenceImage = await faceapi.bufferToImage(file);
-        referencePreview.src = URL.createObjectURL(file);
-        referencePreview.classList.remove('hidden');
+        // Check if models are loaded
+        if (!modelsLoaded) {
+            showResult('Kuting!', 'Avval models yuklanishi kerak. Iltimos, 2-3 soniya kutib turing...', 'info');
+            referenceUpload.value = ''; // Clear the input
+            return;
+        }
         
-        // Enable verification button
-        startVerificationBtn.disabled = false;
-        startVerificationBtn.classList.remove('disabled:opacity-50', 'disabled:cursor-not-allowed');
-        
-        // Extract face descriptors from reference image
-        const detections = await faceapi.detectAllFaces(referenceImage, new faceapi.TinyFaceDetectorOptions())
-            .withFaceLandmarks()
-            .withFaceDescriptors();
-        
-        if (detections.length > 0) {
-            referenceDescriptors = detections.map(d => d.descriptor);
-            showResult('Tayyor!', 'Reference yuz topildi.', 'success');
-        } else {
-            referenceDescriptors = null;
-            showResult('Xatolik!', 'Yuz topilmadi. Boshqa rasm tanlang.', 'error');
+        try {
+            referenceImage = await faceapi.bufferToImage(file);
+            referencePreview.src = URL.createObjectURL(file);
+            referencePreview.classList.remove('hidden');
+            
+            // Enable verification button
+            startVerificationBtn.disabled = false;
+            startVerificationBtn.classList.remove('disabled:opacity-50', 'disabled:cursor-not-allowed');
+            
+            // Extract face descriptors from reference image
+            const detections = await faceapi.detectAllFaces(referenceImage, new faceapi.TinyFaceDetectorOptions())
+                .withFaceLandmarks()
+                .withFaceDescriptors();
+            
+            if (detections.length > 0) {
+                referenceDescriptors = detections.map(d => d.descriptor);
+                showResult('Tayyor!', 'Reference yuz topildi. Endi kamerani yoqing.', 'success');
+            } else {
+                referenceDescriptors = null;
+                showResult('Xatolik!', 'Yuz topilmadi. Boshqa rasm tanlang.', 'error');
+                referencePreview.classList.add('hidden');
+            }
+        } catch (error) {
+            console.error('Error processing reference image:', error);
+            showResult('Xatolik!', 'Rasmni qabul qilishda xatolik yuz berdi.', 'error');
+            referenceUpload.value = '';
         }
     });
     
     // Start verification button
     startVerificationBtn.addEventListener('click', async () => {
+        if (!modelsLoaded) {
+            showResult('Kuting!', 'Models hali yuklanmagan. Iltimos, 2-3 soniya kutib turing...', 'info');
+            return;
+        }
+        
         if (!referenceDescriptors) {
-            alert('Avval reference rasm yuklang!');
+            showResult('Xatolik!', 'Avval reference rasm yuklang!', 'error');
             return;
         }
         
         // Start camera automatically
         await startCamera();
-        showResult('Kamera yoqildi', 'Yuzingizni kameraga qarating.', 'info');
+        showResult('Kamera yoqildi', 'Yuzingizni kameraga qarating va "Rasm Olish" tugmasini bosing.', 'info');
     });
     
     // Camera buttons
-    document.getElementById('start-camera').addEventListener('click', startCamera);
+    document.getElementById('start-camera').addEventListener('click', async () => {
+        if (!modelsLoaded) {
+            showResult('Kuting!', 'Models hali yuklanmagan. Iltimos, 2-3 soniya kutib turing...', 'info');
+            return;
+        }
+        await startCamera();
+    });
     document.getElementById('stop-camera').addEventListener('click', stopCamera);
-    document.getElementById('capture-face').addEventListener('click', captureAndCompare);
+    document.getElementById('capture-face').addEventListener('click', async () => {
+        if (!modelsLoaded) {
+            showResult('Kuting!', 'Models hali yuklanmagan. Iltimos, 2-3 soniya kutib turing...', 'info');
+            return;
+        }
+        await captureAndCompare();
+    });
 });
 
 // ===== CAPTURE AND COMPARE =====
 async function captureAndCompare() {
-    if (!video || !canvas || !referenceDescriptors) {
-        alert('Kamera yoqilmagan yoki reference rasm yoq!');
+    if (!video || !canvas) {
+        showResult('Xatolik!', 'Kamera yoqilmagan!', 'error');
         return;
     }
     
-    // Capture frame from video
-    const context = canvas.getContext('2d');
-    canvas.width = video.videoWidth;
-    canvas.height = video.videoHeight;
-    context.drawImage(video, 0, 0, canvas.width, canvas.height);
-    
-    // Detect faces in captured image
-    const detections = await faceapi.detectAllFaces(canvas, new faceapi.TinyFaceDetectorOptions())
-        .withFaceLandmarks()
-        .withFaceDescriptors();
-    
-    if (detections.length === 0) {
-        showResult('Yuz topilmadi!', 'Kamerada yuz yoq. Iltimos, yuzingizni kameraga qarating.', 'error');
+    if (!referenceDescriptors) {
+        showResult('Xatolik!', 'Avval reference rasm yuklang!', 'error');
         return;
     }
     
-    // Compare with reference
-    const faceMatcher = new faceapi.FaceMatcher(referenceDescriptors, 0.6);
-    const results = detections.map(d => faceMatcher.findBestMatch(d.descriptor));
-    
-    // Display results
-    const bestMatch = results[0];
-    const confidence = bestMatch.distance;
-    const isMatch = confidence <= 0.6; // Threshold: lower is better
-    
-    let resultText, resultDesc, resultType;
-    if (isMatch) {
-        resultText = 'Muvvaffaqiyatli!';
-        resultDesc = `Yuz mos keladi! Aniqlik: ${Math.round((1 - confidence) * 100)}%`;
-        resultType = 'success';
-    } else {
-        resultText = 'Mos kelmadi!';
-        resultDesc = `Yuz mos kelmadi. Aniqlik: ${Math.round((1 - confidence) * 100)}%`;
-        resultType = 'error';
+    try {
+        // Show processing state
+        showResult('Kutilmoqda...', 'Yuzni aniqlash va solishtirish jarayonida...', 'info');
+        
+        // Capture frame from video
+        const context = canvas.getContext('2d');
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+        context.drawImage(video, 0, 0, canvas.width, canvas.height);
+        
+        // Detect faces in captured image
+        const detections = await faceapi.detectAllFaces(canvas, new faceapi.TinyFaceDetectorOptions())
+            .withFaceLandmarks()
+            .withFaceDescriptors();
+        
+        if (detections.length === 0) {
+            showResult('Yuz topilmadi!', 'Kamerada yuz yoq. Iltimos, yuzingizni kameraga qarating.', 'error');
+            return;
+        }
+        
+        // Compare with reference
+        const faceMatcher = new faceapi.FaceMatcher(referenceDescriptors, 0.6);
+        const results = detections.map(d => faceMatcher.findBestMatch(d.descriptor));
+        
+        // Display results
+        const bestMatch = results[0];
+        const confidence = bestMatch.distance;
+        const isMatch = confidence <= 0.6; // Threshold: lower is better
+        
+        let resultText, resultDesc, resultType;
+        if (isMatch) {
+            resultText = 'Muvvaffaqiyatli!';
+            resultDesc = `Yuz mos keladi! Aniqlik: ${Math.round((1 - confidence) * 100)}%`;
+            resultType = 'success';
+        } else {
+            resultText = 'Mos kelmadi!';
+            resultDesc = `Yuz mos kelmadi. Aniqlik: ${Math.round((1 - confidence) * 100)}%`;
+            resultType = 'error';
+        }
+        
+        showResult(resultText, resultDesc, resultType);
+    } catch (error) {
+        console.error('Error in captureAndCompare:', error);
+        showResult('Xatolik!', 'Yuzni aniqlashda xatolik yuz berdi. Iltimos, qayta urinib ko\'ring.', 'error');
     }
-    
-    showResult(resultText, resultDesc, resultType);
 }
 
 // ===== SHOW RESULT =====
